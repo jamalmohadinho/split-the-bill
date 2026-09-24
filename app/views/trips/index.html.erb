@@ -1,0 +1,17 @@
+<h1>My Trips</h1>
+
+<%= link_to "New Trip", new_trip_path %>
+
+<% if @trips.any? %>
+  <% @trips.each do |trip| %>
+    <div>
+      <h2><%= link_to trip.name, trip_path(trip) %></h2>
+      <p>Dates: <%= trip.start_date %> to <%= trip.end_date %></p>
+      <p>Participants: <%= trip.participants.map(&:name).join(", ") %></p>
+      <%= link_to "Edit", edit_trip_path(trip) %> |
+      <%= link_to "Delete", trip_path(trip), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+    </div>
+  <% end %>
+<% else %>
+  <p>You have no trips yet. <%= link_to "Create one!", new_trip_path %></p>
+<% end %>

@@ -1,0 +1,17 @@
+<h1>Login</h1>
+
+<%= form_with url: login_path do |f| %>
+  <div>
+    <%= f.label :email %>
+    <%= f.email_field :email, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :password %>
+    <%= f.password_field :password, required: true %>
+  </div>
+
+  <%= f.submit "Login" %>
+<% end %>
+
+<p>Don't have an account? <%= link_to "Sign Up", signup_path %></p>

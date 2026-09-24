@@ -1,0 +1,74 @@
+<h1><%= @trip.name %></h1>
+<p>Dates: <%= @trip.start_date %> to <%= @trip.end_date %></p>
+<p>Creator: <%= @trip.creator.name %></p>
+<p>Participants: <%= @trip.participants.map(&:name).join(", ") %></p>
+
+<%= link_to "Edit Trip", edit_trip_path(@trip) %> |
+<%= link_to "Delete Trip", trip_path(@trip), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+
+<hr>
+
+<h2>Expenses</h2>
+<%= link_to "Add Expense", new_trip_expense_path(@trip) %>
+
+<% if @trip.expenses.any? %>
+  <% @trip.expenses.each do |expense| %>
+    <div>
+      <p><strong><%= expense.description %></strong></p>
+      <p>Amount: $<%= expense.amount %></p>
+      <p>Date: <%= expense.date %></p>
+      <p>Paid by: <%= expense.paid_by.name %></p>
+      <p>Shared by: <%= expense.participants.map(&:name).join(", ") %></p>
+      <% if expense.category.present? %>
+        <p>Category: <%= expense.category %></p>
+      <% end %>
+      <%= link_to "Delete", trip_expense_path(@trip, expense), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" } %>
+    </div>
+  <% end %>
+<% else %>
+  <p>No expenses yet.</p>
+<% end %>
+
+<hr>
+
+<h2>Summary</h2>
+<% @trip.participants.each do |participant| %>
+  <% total_paid = @trip.expenses.select { |e| e.paid_by == participant }.sum(&:amount) %>
+  <% total_owed = @trip.expenses.sum { |e| e.participants.include?(participant) ? e.amount / e.participants.count : 0 } %>
+  <% net = total_paid - total_owed %>
+  <p>
+    <%= participant.name %> —
+    Paid: $<%= total_paid.round(2) %> |
+    Owes: $<%= total_owed.round(2) %> |
+    Net: $<%= net.round(2) %>
+  </p>
+<% end %>
+
+<hr>
+
+<h2>How to Settle Up</h2>
+<% balances = @trip.participants.map do |participant|
+  total_paid = @trip.expenses.select { |e| e.paid_by == participant }.sum(&:amount)
+  total_owed = @trip.expenses.sum { |e| e.participants.include?(participant) ? e.amount / e.participants.count : 0 }
+  { user: participant, balance: (total_paid - total_owed).round(2) }
+end %>
+
+<% creditors = balances.select { |b| b[:balance] > 0 }.sort_by { |b| -b[:balance] }
+   debtors   = balances.select { |b| b[:balance] < 0 }.sort_by { |b| b[:balance] } %>
+
+<% if creditors.empty? && debtors.empty? %>
+  <p>Everyone is settled up!</p>
+<% else %>
+  <% debtors.each do |debtor|
+       amount_left = debtor[:balance].abs
+       creditors.each do |creditor|
+         next if amount_left == 0 || creditor[:balance] == 0
+         payment = [amount_left, creditor[:balance]].min %>
+         <p><%= debtor[:user].name %> pays <%= creditor[:user].name %> $<%= payment.round(2) %></p>
+  <%   amount_left -= payment
+       creditor[:balance] -= payment
+       end
+     end %>
+<% end %>
+
+<%= link_to "Back to Trips", trips_path %>

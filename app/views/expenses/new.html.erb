@@ -1,0 +1,43 @@
+<h1>Add Expense to <%= @trip.name %></h1>
+
+<%= form_with model: @expense, url: trip_expenses_path(@trip) do |f| %>
+  <% if @expense.errors.any? %>
+    <ul>
+      <% @expense.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= f.label :description %>
+    <%= f.text_field :description, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :amount %>
+    <%= f.number_field :amount, step: 0.01, min: 0, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :date %>
+    <%= f.date_field :date, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :category %>
+    <%= f.select :category, ["Gas", "Lodging", "Food", "Entertainment", "Other"], include_blank: "Select a category" %>
+  </div>
+
+  <h3>Who is sharing this expense?</h3>
+  <% @trip.participants.each do |participant| %>
+    <div>
+      <%= check_box_tag "expense[participant_ids][]", participant.id, participant == current_user %>
+      <%= label_tag "expense[participant_ids][]", participant.name %>
+    </div>
+  <% end %>
+
+  <%= f.submit "Add Expense" %>
+<% end %>
+
+<%= link_to "Back", trip_path(@trip) %>

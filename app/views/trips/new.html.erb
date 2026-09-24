@@ -1,0 +1,39 @@
+<h1>New Trip</h1>
+
+<%= form_with model: @trip, url: trips_path do |f| %>
+  <% if @trip.errors.any? %>
+    <ul>
+      <% @trip.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= f.label :name %>
+    <%= f.text_field :name, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :start_date %>
+    <%= f.date_field :start_date, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :end_date %>
+    <%= f.date_field :end_date, required: true %>
+  </div>
+
+  <h3>Add Participants</h3>
+  <% User.all.each do |user| %>
+    <% next if user == current_user %>
+    <div>
+      <%= check_box_tag "trip[participant_ids][]", user.id %>
+      <%= label_tag "trip[participant_ids][]", user.name %>
+    </div>
+  <% end %>
+
+  <%= f.submit "Create Trip" %>
+<% end %>
+
+<%= link_to "Back", trips_path %>

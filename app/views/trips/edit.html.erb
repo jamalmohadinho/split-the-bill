@@ -1,0 +1,30 @@
+<h1>Edit Trip</h1>
+
+<%= form_with model: @trip, url: trip_path(@trip), method: :patch do |f| %>
+  <% if @trip.errors.any? %>
+    <ul>
+      <% @trip.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div>
+    <%= f.label :name %>
+    <%= f.text_field :name, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :start_date %>
+    <%= f.date_field :start_date, required: true %>
+  </div>
+
+  <div>
+    <%= f.label :end_date %>
+    <%= f.date_field :end_date, required: true %>
+  </div>
+
+  <%= f.submit "Update Trip" %>
+<% end %>
+
+<%= link_to "Back", trip_path(@trip) %>

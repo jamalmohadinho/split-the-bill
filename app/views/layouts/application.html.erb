@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Split The Bill</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body>
+    <nav>
+      <% if logged_in? %>
+        Logged in as <%= current_user.name %>
+        <%= link_to "Trips", trips_path %> |
+        <%= link_to "Logout", logout_path, data: { turbo_method: :delete } %>
+      <% else %>
+        <%= link_to "Login", login_path %> |
+        <%= link_to "Sign Up", signup_path %>
+      <% end %>
+    </nav>
+
+    <% flash.each do |type, message| %>
+      <p><%= message %></p>
+    <% end %>
+
+    <%= yield %>
+  </body>
+</html>
