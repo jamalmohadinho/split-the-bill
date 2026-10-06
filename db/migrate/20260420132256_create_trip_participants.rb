@@ -9,6 +9,6 @@ class CreateTripParticipants < ActiveRecord::Migration[7.2]
 
     add_foreign_key :trip_participants, :trips
     add_foreign_key :trip_participants, :users
-    add_index :trip_participants, [:trip_id, :user_id], unique: true
+    add_index :trip_participants, [ :trip_id, :user_id ], unique: true
   end
 end

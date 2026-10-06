@@ -9,6 +9,6 @@ class CreateExpenseParticipants < ActiveRecord::Migration[7.2]
 
     add_foreign_key :expense_participants, :expenses
     add_foreign_key :expense_participants, :users
-    add_index :expense_participants, [:expense_id, :user_id], unique: true
+    add_index :expense_participants, [ :expense_id, :user_id ], unique: true
   end
 end
